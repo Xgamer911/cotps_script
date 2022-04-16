@@ -25,11 +25,11 @@ Program requirements
 
 Python Modules Needed
 ----------------------------
-* selenium 
+* selenium (needs to be installed)
 * configparser
 * time
 * datetime
-* pytz
+* pytz (needs to be installed)
 * csv
 * os
 
