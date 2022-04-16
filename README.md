@@ -12,6 +12,7 @@ FTX ERC-20 wallet:  0x37F6fFF40705120b5Ed81200FAD4142aa9962cE1
 
 FTX TRX wallet:     TUAGnw4wQXqCbsx5XWsn2mR7RVjcqDetkW
 
+Use the github issues for any problems with the script or feature requests. If you have an issue, please provide your current versions of the required programs provided below, the error you received, and any python traceback that might have occured.
 
 Program requirements
 ----------------------------
