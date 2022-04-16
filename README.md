@@ -52,8 +52,13 @@ Program logic
 
 Starting the Program
 ----------------------------
-Open command line, goto cotps.py location and type "python cotps.py"
+First, open a command prompt and type "pip install selenium"
 
-or
+This will install the selenium webdriver for python.
 
-double clicking on cotps.py
+Second, type "pip install pytz"
+
+This will install a timezone module for python.
+
+Then goto cotps.py location and type "python cotps.py"
+
