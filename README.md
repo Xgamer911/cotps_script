@@ -7,16 +7,23 @@ This script is to simply create orders when no money is currently in transaction
 Please consider donating or tipping
 ----------------------------
 Cotps TRC20 wallet: TSD656HMENSsdaSU6QZhyS9xyiicAZ37kv
+
 FTX ERC-20 wallet:  0x37F6fFF40705120b5Ed81200FAD4142aa9962cE1
+
 FTX TRX wallet:     TUAGnw4wQXqCbsx5XWsn2mR7RVjcqDetkW
+
 
 Program requirements
 ----------------------------
-Chrome - Tested on Version 100.0.4896.127 (Official Build) (64-bit)
-Chrome Driver - Tested on ChromeDriver Version 100.0.4896.60
+* Chrome - Tested on Version 100.0.4896.127 (Official Build) (64-bit)
+
+* Chrome Driver - Tested on ChromeDriver Version 100.0.4896.60
     https://sites.google.com/chromium.org/driver/downloads
-Python - Version 3.6.8
-Edited config.cfg file with location of chromedriver file, username (ie phone number), and password.
+    
+* Python - Version 3.6.8
+
+* Edited config.cfg file with location of chromedriver file, username (ie phone number), and password.
+
 
 Program logic
 ----------------------------
@@ -37,5 +44,7 @@ Program logic
 Starting the Program
 ----------------------------
 Open command line, goto cotps.py location and type "python cotps.py"
+
 or
+
 double clicking on cotps.py
