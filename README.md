@@ -17,13 +17,21 @@ Use the github issues for any problems with the script or feature requests. If y
 Program requirements
 ----------------------------
 * Chrome - Tested on Version 100.0.4896.127 (Official Build) (64-bit)
-
 * Chrome Driver - Tested on ChromeDriver Version 100.0.4896.60
     https://sites.google.com/chromium.org/driver/downloads
-    
 * Python - Version 3.6.8
-
 * Edited config.cfg file with location of chromedriver file, username (ie phone number), and password.
+
+
+Python Modules Needed
+----------------------------
+* selenium 
+* configparser
+* time
+* datetime
+* pytz
+* csv
+* os
 
 
 Program logic
