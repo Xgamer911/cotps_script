@@ -33,6 +33,12 @@ Python Modules Needed
 * csv
 * os
 
+How to install python modules 
+----------------------------
+1) Install python 
+2) Open start menu and type "cmd". This will open a command prompt.
+3) In that command prompt, type "pip install selenium". This will install the selenium webdriver module.
+4) In that same command prompt, type "pip install pytz". This will install the timezone module.
 
 Program logic
 ----------------------------
@@ -52,13 +58,5 @@ Program logic
 
 Starting the Program
 ----------------------------
-First, open a command prompt and type "pip install selenium"
-
-This will install the selenium webdriver for python.
-
-Second, type "pip install pytz"
-
-This will install a timezone module for python.
-
 Then goto cotps.py location and type "python cotps.py"
 
