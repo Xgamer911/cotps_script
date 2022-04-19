@@ -43,14 +43,30 @@ def startchrome(chromedriver):
 def logintocotps(driver,refreshtime):
     driver.get('https://cotps.com/#/pages/login/login')
     time.sleep(refreshtime)
+
+    #Checks if phone extension is anything other than one. IE different country
+    if phoneext != '1':
+        #opens phone extension area 
+        varphoneext=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[5]/uni-text')
+        varphoneext.click()
+        time.sleep(refreshtime/2)
+        #Clicks input field and types extension
+        varphoneext=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[1]/uni-view/uni-input/div/input')
+        varphoneext.send_keys(phoneext)
+        time.sleep(refreshtime/2)
+        #Clicks confrim button
+        confirmbutton=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[1]/uni-button')
+        confirmbutton.click()
+        time.sleep(refreshtime/2)
+
     #find phone and password fields
     ele = driver.find_elements_by_class_name('uni-input-input')
     print("Inputting phone number")
     ele[0].send_keys(username)
-    time.sleep(1)
+    time.sleep(refreshtime/2)
     print("Inputting password")
     ele[1].send_keys(password)
-    time.sleep(1)
+    time.sleep(refreshtime/2)
     print("Finding and clicking login")
     loginbutton=driver.find_elements_by_class_name('login')
     loginbutton[0].click()
@@ -157,6 +173,8 @@ if __name__ == '__main__':
 
     #Provide chromedriver location
     chromedriver=config['DEFAULT']['chromedriverfile']
+    #Provide the extension for phone number for login
+    phoneext=config['DEFAULT']['phoneext']
     #Provide the email and password
     username=config['DEFAULT']['username']
     password=config['DEFAULT']['password']
