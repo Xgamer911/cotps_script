@@ -28,7 +28,11 @@ See folder "Detailed Instructions"
 
 Starting the Program
 ----------------------------
-Then goto cotps.py location and type "python cotps.py"
+Double click the cotps.py script 
+
+or
+
+Open command prompt, goto cotps.py location and then type "python cotps.py"
 
 Python Modules Needed
 ----------------------------
