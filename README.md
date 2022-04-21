@@ -22,6 +22,13 @@ Program requirements
 * Python - Version 3.6.8
 * Edited config.cfg file with location of chromedriver file, username (ie phone number), and password.
 
+Installing the requirements
+----------------------------
+See folder "Detailed Instructions"
+
+Starting the Program
+----------------------------
+Then goto cotps.py location and type "python cotps.py"
 
 Python Modules Needed
 ----------------------------
@@ -32,13 +39,6 @@ Python Modules Needed
 * pytz (needs to be installed)
 * csv
 * os
-
-How to install python modules 
-----------------------------
-1) Install python 
-2) Open start menu and type "cmd". This will open a command prompt.
-3) In that command prompt, type "pip install selenium". This will install the selenium webdriver module.
-4) In that same command prompt, type "pip install pytz". This will install the timezone module.
 
 Program logic
 ----------------------------
@@ -55,8 +55,3 @@ Program logic
 11) The program will then gather the order details and then click the "Confirm" button.
 12) It will continue steps 10 and 11 until there is less than $5 left in the wallet.
 13) It will then start the "timebetweenchecks" wait until the "In Transaction" reaches 0 again.
-
-Starting the Program
-----------------------------
-Then goto cotps.py location and type "python cotps.py"
-
