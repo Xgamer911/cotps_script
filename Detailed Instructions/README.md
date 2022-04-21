@@ -8,14 +8,14 @@ Installing Chrome
 
 Installing ChromeDriver
 -------------------------------------
-1) Using web browser, goto chromedriver.chromium.org/downloads. Then select "Chromedriver 100.0.4896.60" (Installing Chromedriver - Picture 1)
+1) Using web browser, goto http://chromedriver.chromium.org/downloads. Then select "Chromedriver 100.0.4896.60" (Installing Chromedriver - Picture 1)
 2) At the next webapge, select "chromedriver_win32.zip) to download. (Installing Chrome - Picture 2)
 3) Once download is complete, goto your download folder, right-click "chromedriver_win32.zip", and left-click "extract all". (Installing Chrome - Picture 3)
 4) Type "C:\chromedriver" into the extraction folder and then left-click "extract". (Installing Chrome - Picture 4)
 
 Installing Python and Modules
 -------------------------------------
-1) Using web browser, goto python.org/downloads/windows/ and find Puthon 3.6.8. Then download the "Windows x86-64 executable installer". (Installing Python - Picture 1)
+1) Using web browser, goto www.python.org/downloads/windows/ and find Puthon 3.6.8. Then download the "Windows x86-64 executable installer". (Installing Python - Picture 1)
 2) Goto your download folder and double click the file "python-3.6.8-amd64". (Installing Python - Picture 2)
 3) On the python installation window, check the box "Add python 3.6 to PATH" and then left click "Install Now". (Installing Python - Picture 3)
 4) Another screen will appear asking if you want to allow app to make changes. Select yes. (Installing Python - Picture 4)
