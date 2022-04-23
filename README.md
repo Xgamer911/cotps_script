@@ -1,7 +1,9 @@
 # cotps_script
 
 Script by Ryan Briggs, with LOTS of mods by Francis. Be nice and reward your dev, send your USDT to TRON wallet:
+
     Ryan: TSD656HMENSsdaSU6QZhyS9xyiicAZ37kv
+    
     Francis: TT63rNP6fwH6f7fJD1EYCnFMJz7U5nXYw9
 
 Francis COTP ref: https://www.cotps.com#/pages/login/register?invite=822569
