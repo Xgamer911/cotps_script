@@ -1,18 +1,18 @@
 # cotps_script
 
+Script by Ryan Briggs, with LOTS of mods by Francis. Be nice and reward your dev, send your USDT to TRON wallet:
+
+    Ryan: TSD656HMENSsdaSU6QZhyS9xyiicAZ37kv
+    
+    Francis: TT63rNP6fwH6f7fJD1EYCnFMJz7U5nXYw9
+
+Francis COTP ref: https://www.cotps.com#/pages/login/register?invite=822569
+
+Source is on https://github.com/Francis-I-Am/cotps_script/
+
 Overview
 ----------------------------
 This script is to simply create orders when no money is currently in transaction. It will also keep track of all orders within a csv file in the same directory as the cotps.py script file.
-
-Please consider donating or tipping
-----------------------------
-Cotps TRC20 wallet: TSD656HMENSsdaSU6QZhyS9xyiicAZ37kv
-
-FTX USDT ERC20 wallet:  0x37F6fFF40705120b5Ed81200FAD4142aa9962cE1
-
-FTX USDT TRC20 wallet:     TUAGnw4wQXqCbsx5XWsn2mR7RVjcqDetkW
-
-Use the github issues for any problems with the script or feature requests. If you have an issue, please provide your current versions of the required programs provided below, the error you received, and any python traceback that might have occured.
 
 Program requirements
 ----------------------------
@@ -22,17 +22,6 @@ Program requirements
 * Python - Version 3.6.8
 * Edited config.cfg file with location of chromedriver file, username (ie phone number), and password.
 
-Installing the requirements
-----------------------------
-See folder "Detailed Instructions"
-
-Starting the Program
-----------------------------
-Double click the cotps.py script 
-
-or
-
-Open command prompt, goto cotps.py location and then type "python cotps.py"
 
 Python Modules Needed
 ----------------------------
@@ -43,19 +32,29 @@ Python Modules Needed
 * pytz (needs to be installed)
 * csv
 * os
+* requests
+* discord
+
 
 Program logic
 ----------------------------
 1) Starts by reading in config.cfg file in same directory as the script and declares all needed variables.
 2) Checks if there is already a csv file already created with the name from the config file. If there is one, it will append to it. If there is not, it will create one.
 3) Get current program start time.
-4) Please donate :D
-5) Starts chrome browser with the chromedriver file. The location of the chromedriver file needs to be provided in the config.cfg file.
-6) Begins to login to cotps using the username and password from the config.cfg file.
-7) Once it authenticates, it will goto the transaction hall page. Depending on the speed of the internet or the webpage, the variable "refreshtime", may need to be increased. This variable is how long the program will wait for the webpage or actions to load. If you have a lot of errors with this program, I recommend to increase this number. I have gotten it to work with as low as 8, but I found my sweet spot to be 10.
-8) The program will then get the current wallet information.
-9) If the "In Transaction" is not 0, it will wait. This time between wallet checks can be modified by changing the "timebetweenchecks" variable of the config.cfg file.
-10) If the "In Transaction" is 0, the program will attempt to get an order by clicking the "immediate competition for orders" button and then the "Sell" button.
-11) The program will then gather the order details and then click the "Confirm" button.
-12) It will continue steps 10 and 11 until there is less than $5 left in the wallet.
-13) It will then start the "timebetweenchecks" wait until the "In Transaction" reaches 0 again.
+4) Starts chrome browser with the chromedriver file. The location of the chromedriver file needs to be provided in the config.cfg file.
+5) Begins to login to cotps using the username and password from the config.cfg file.
+6) Once it authenticates, it will goto the referral rewards page and will click the button to claim. Then it will go to the transaction hall (referral claiming will be done every wait cycle). Depending on the speed of the internet or the webpage, the variable "refreshtime", may need to be increased. This variable is how long the program will wait for the webpage or actions to load. If you have a lot of errors with this program, I recommend to increase this number. I have gotten it to work with as low as 8, but I found my sweet spot to be 10.
+7) The program will then get the current wallet information.
+8) If the "In Transaction" below the set percentage, it will wait. This time between wallet checks can be modified by changing the "timebetweenchecks" variable of the config.cfg file.
+9) If the "In Transaction" is 0, the program will attempt to get an order by clicking the "immediate competition for orders" button and then the "Sell" button.
+10) The program will then gather the order details and then click the "Confirm" button.
+11) It will continue steps 10 and 11 until there is less than $5 left in the wallet.
+12) It will then start the "timebetweenchecks" wait until the "In Transaction" reaches the set up amount or percentage again.
+
+Starting the Program
+----------------------------
+First, open a command prompt and type "pip install selenium"
+
+This will install the selenium webdriver for python.
+
+Also do this for other Python modules mentioned before.
