@@ -99,32 +99,33 @@ def gotoreferralrewards(driver,refreshtime):
 def claimreferralfees(driver,refreshtime):
     try:
         # Claim LV1
-        varfees=float(driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-view/uni-view[1]/uni-view[2]/uni-view[2]').text)
+        varfees1=float(driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-view/uni-view[1]/uni-view[2]/uni-view[2]').text)
         varconfirm=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-view/uni-button')
         varconfirm.click()
-        sendlogmessage('Fees LV1: $' + str(varfees))
+        sendlogmessage('Fees LV1: $' + str(varfees1))
         time.sleep(refreshtime)
 
         # Claim LV2
-        varfees=float(varfees) + float(driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-view/uni-view[1]/uni-view[2]/uni-view[2]').text)
         varconfirm=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[1]/uni-view[2]')
         varconfirm.click()
         time.sleep(refreshtime/2)
+        varfees2=float(driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-view/uni-view[1]/uni-view[2]/uni-view[2]').text)
         varconfirm=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-view/uni-button')
         varconfirm.click()
-        sendlogmessage('Fees LV2: $' + str(varfees))
+        sendlogmessage('Fees LV2: $' + str(varfees2))
         time.sleep(refreshtime)
 
         # Claim LV3
-        varfees=float(varfees) + float(driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-view/uni-view[1]/uni-view[2]/uni-view[2]').text)
         varconfirm=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[1]/uni-view[3]')
         varconfirm.click()
         time.sleep(refreshtime/2)
+        varfees3=float(driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-view/uni-view[1]/uni-view[2]/uni-view[2]').text)
         varconfirm=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-view/uni-button')
-        sendlogmessage('Fees LV3: $' + str(varfees))
+        sendlogmessage('Fees LV3: $' + str(varfees3))
         varconfirm.click()
+        varfeetotal=varfees1+varfees2+varfees3
 
-        sendlogmessage('Claimed fees: $' + str(varfees))
+        sendlogmessage('Claimed fees: $' + str(varfeetotal))
 
         time.sleep(refreshtime)
     except:
@@ -311,7 +312,7 @@ if __name__ == '__main__':
         currentdate=today.strftime("%m-%d")
         currenttime=now.strftime("%H:%M")
 
-        if claimreferrals == 1:
+        if int(claimreferrals) == 1:
             #check and claim referral rewards
             sendlogmessage('Opening referrals page and claiming fees')
             gotoreferralrewards(driver,refreshtime)
