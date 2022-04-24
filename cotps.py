@@ -9,7 +9,7 @@ import time
 #To get current date and time
 from datetime import date
 from datetime import datetime
-#Get eastern timezon
+#Get timezone
 import pytz
 #The ability to write CSV
 import csv
@@ -262,6 +262,12 @@ if __name__ == '__main__':
     runheadless=config['DEFAULT']['runheadless']
     # Discord webhook URL
     discordwebhookurl=config['DEFAULT']['discordwebhookurl']
+    # Keep this percentage of your funds in the wallet (calculates of total funds)
+    reservepercentage=config['DEFAULT']['reservepercentage']
+    claimreferrals=config['DEFAULT']['claimreferrals']
+    
+    sendlogmessage('Claiming referrals: ' + claimreferrals)
+    sendlogmessage('Keeping ' + reservepercentage + '% of funds for easy claiming')
 
     #initializating variable
     walletinfo=[0,0]
@@ -305,10 +311,12 @@ if __name__ == '__main__':
         currentdate=today.strftime("%m-%d")
         currenttime=now.strftime("%H:%M")
 
-        #check and claim referral rewards
-        sendlogmessage('Opening referrals page and claiming fees')
-        gotoreferralrewards(driver,refreshtime)
-        claimreferralfees(driver,refreshtime)
+        if claimreferrals == 1:
+            #check and claim referral rewards
+            sendlogmessage('Opening referrals page and claiming fees')
+            gotoreferralrewards(driver,refreshtime)
+            claimreferralfees(driver,refreshtime)
+        #END IF
 
         #Goto Transaction Hall
         sendlogmessage('Back to transaction hall...')
@@ -342,6 +350,10 @@ if __name__ == '__main__':
                     #Get order details
                     orderdict=getorderdetails(driver,refreshtime,orderdict)
 
+                    if str(orderdict.get("transactionamount")) == '':
+                        break
+                    #END IF
+
                     #Click Confirm button
                     orderconfirm()
                     today=date.today()
@@ -351,7 +363,9 @@ if __name__ == '__main__':
                     timestamp=currentdate + ' ' + currenttime
                     sendlogmessage('Order $' + str(orderdict.get("transactionamount")) + ', profit $' + str(orderdict.get("profit")) + ' at ' + str(timestamp))
                     orderdict.update({"timeofsale": str(timestamp)})
-                    orderdicttxthisrun = float(orderdicttxthisrun) + float(orderdict.get("transactionamount"))
+                    if orderdict.get("transactionamount") != '':
+                        orderdicttxthisrun = float(orderdicttxthisrun) + float(orderdict.get("transactionamount"))
+                    #END IF
                     orderdictprofitthisrun = round(float(orderdictprofitthisrun) + float(orderdict.get("profit")), 2)
 
                     #Write current Order to CSV
@@ -366,10 +380,17 @@ if __name__ == '__main__':
                     #What is my current wallet
                     currentwallet=float(walletinfo[0])
 
-                    #If less than $5, stop purchasing
-                    if currentwallet <= 5:
+                    #If wallet % is less than given %1 to keep in reserve, stop purchasing
+                    assetpercentage = round(totalassets*(float(reservepercentage)/100), 2)
+                    if currentwallet <= assetpercentage:
+                        sendlogmessage('$' + str(currentwallet) + ' in wallet, which is smaller than $' + str(assetpercentage) + ' based on what to keep. Stopping cycle')
                         #breaks out of loop when money is to low
                         break
+                    #END IF
+
+                    #If less than $5, stop purchasing
+                    if currentwallet <= 5:
+                        break;
                     #END IF
                 else:
                     #break out of loop when clicking sell buttons don't work
