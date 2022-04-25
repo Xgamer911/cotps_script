@@ -1,3 +1,6 @@
+# cotps_script
+# v1.22
+# Script by Ryan Briggs, with LOTS of mods and code cleanup by Francis.
 # Import modules
 #Controlling chrome modules
 from selenium import webdriver
