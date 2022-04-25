@@ -239,6 +239,12 @@ def sendlogmessage(message):
         print(sendingmessage)
 #END DEF
 
+def restartprogram(driver,errorsthatoccured):
+    sendlogmessage('ERROR - ' + str(errorsthatoccured) + ' have occured, restarting program')
+    driver.quit()
+    os.startfile(__file__)
+#END DEF
+
 # Main Function
 if __name__ == '__main__':
     config=configparser.ConfigParser()
@@ -270,6 +276,9 @@ if __name__ == '__main__':
     runheadless=config['DEFAULT']['runheadless']
     # Discord webhook URL
     discordwebhookurl=config['DEFAULT']['discordwebhookurl']
+    # Will restart program if so many errors occur
+    errorsuntilrestart=int(config['DEFAULT']['errorsuntilrestart'])
+    errorsthatoccured=0
 
     #initializating variable
     walletinfo=[0,0]
@@ -305,6 +314,10 @@ if __name__ == '__main__':
 
     #Begin in transaction watch cycle
     while True:
+
+        if errorsthatoccured==errorsuntilrestart:
+            restartprogram(driver, errorsthatoccured)
+            break
 
         dologincheck(driver,refreshtime)
 
@@ -385,6 +398,7 @@ if __name__ == '__main__':
                     #END IF
                 else:
                     #break out of loop when clicking sell buttons don't work
+                    errorsthatoccured=errorsthatoccured+1
                     break
                 #END IF
             #END WHILE
