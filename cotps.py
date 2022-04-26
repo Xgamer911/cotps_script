@@ -1,7 +1,7 @@
 # cotps_script
-# v1.2.2
+# v1.3
 # Script by Ryan Briggs, with LOTS of mods and code cleanup by Francis.
-# Import modules
+#Import modules
 #Controlling chrome modules
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -60,7 +60,11 @@ def dologincheck(driver,refreshtime):
 #END DEF
 
 def logintocotps(driver,refreshtime):
-    sendlogmessage("Logging into COTPS")
+    if groupdiscord==1:
+        sendgroupmessage("Logging into COTPS")
+    else:
+        sendlogmessage("Logging into COTPS")
+
     driver.get('https://cotps.com/#/pages/login/login')
     time.sleep(refreshtime)
     ele = driver.find_elements_by_class_name('uni-input-input')
@@ -235,11 +239,28 @@ def sendlogmessage(message):
         currenttime=now.strftime("%H:%M")
         #adding timestamp to discord message
         sendingmessage = currentdate + ' ' + currenttime + ' - ' + message
+        print(sendingmessage)
+    except:
+        print(message)
+#END DEF
+
+def sendgroupmessage(message):
+    try:
+        #creating timestamp for discord message
+        today=date.today()
+        now = datetime.now(est)
+        currentdate=today.strftime("%m-%d")
+        currenttime=now.strftime("%H:%M")
+        #adding timestamp to discord message
+        if groupdiscord == 1:
+            sendingmessage = groupbotname + ' - ' + currentdate + ' ' + currenttime + ' - ' + message
+        else:
+            sendingmessage = currentdate + ' ' + currenttime + ' - ' + message
         webhook = Webhook.from_url(discordwebhookurl, adapter=RequestsWebhookAdapter())
         webhook.send(sendingmessage)
         print(sendingmessage)
     except:
-        print(message)
+        print('ERROR - ' + message)
 #END DEF
 
 def restartprogram(driver,errorsthatoccured):
@@ -285,7 +306,14 @@ if __name__ == '__main__':
     # Will restart program if so many errors occur
     errorsuntilrestart=int(config['DEFAULT']['errorsuntilrestart'])
     errorsthatoccured=0
-    
+    # if you have more than one bot going to the same discord channel (IE checkin)
+    groupdiscord=int(config['DEFAULT']['groupdiscord'])
+    groupbotname=str(config['DEFAULT']['groupbotname'])
+    # this will send a periodic checkin. This number will be multipled by the timebetweeneachcheck time
+    groupcheckin=int(config['DEFAULT']['groupcheckin'])
+
+    groupcheckincounter=0
+
     sendlogmessage('Claiming referrals: ' + claimreferrals)
     sendlogmessage('Keeping ' + reservepercentage + '% of funds for easy claiming')
 
@@ -309,8 +337,10 @@ if __name__ == '__main__':
     now = datetime.now(est)
     currentdate=today.strftime("%m-%d")
     currenttime=now.strftime("%H:%M")
-
-    sendlogmessage('Program start time: ' + currentdate + ' ' + currenttime)
+    if groupdiscord==1:
+        sendgroupmessage('Program start time: ' + currentdate + ' ' + currenttime)
+    else:
+        sendlogmessage('Program start time: ' + currentdate + ' ' + currenttime)
 
     #start browser
     driver=startchrome(chromedriver)
@@ -358,8 +388,10 @@ if __name__ == '__main__':
 
         #start transactions when wallet percentage reaches at least the % set in config OR the amount set to start
         if (float(walletbalancepercentage) >= float(walletpercentagetostart) or (float(currentwallet) >= float(walletamounttostart))):
-
-            sendlogmessage('Starting trades')
+            if groupdiscord==1:
+                sendgroupmessage('Starting trades')
+            else:
+                sendlogmessage('Starting trades')
 
             if int(claimreferrals) == 1:
                 #check and claim referral rewards
@@ -431,6 +463,16 @@ if __name__ == '__main__':
         #END IF
         dologincheck(driver,refreshtime)
         sendlogmessage('Waiting ' + str(timebetweeneachcheck) + ' seconds to begin next wallet check')
+
+        #checking if it is time to checkin
+        if groupcheckincounter==groupcheckin:
+            if groupdiscord==1:
+                sendgroupmessage('Checking in')
+            else:
+                sendlogmessage('Checking in')
+            groupcheckincounter=0
+
         time.sleep(timebetweeneachcheck)
+        groupcheckincounter=groupcheckincounter+1
     #END WHILE
 #END DEF
