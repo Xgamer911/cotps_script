@@ -60,6 +60,7 @@ def dologincheck(driver,refreshtime):
 #END DEF
 
 def logintocotps(driver,refreshtime):
+    #send group discord message if enabled
     if groupdiscord==1:
         sendgroupmessage("Logging into COTPS")
     else:
@@ -252,6 +253,7 @@ def sendgroupmessage(message):
         currentdate=today.strftime("%m-%d")
         currenttime=now.strftime("%H:%M")
         #adding timestamp to discord message
+        #send group discord message if enabled
         if groupdiscord == 1:
             sendingmessage = groupbotname + ' - ' + currentdate + ' ' + currenttime + ' - ' + message
         else:
@@ -311,7 +313,11 @@ if __name__ == '__main__':
     groupbotname=str(config['DEFAULT']['groupbotname'])
     # this will send a periodic checkin. This number will be multipled by the timebetweeneachcheck time
     groupcheckin=int(config['DEFAULT']['groupcheckin'])
+    # This variable will claim referrals at the beginning of each cycle or at the beginning of a trade cycle
+    # 1 for each cycle and 0 for before each trade cycle
+    claimtime=int(config['DEFAULT']['claimtime'])
 
+    #Counter variable that will increment each cycle, once it reaches the groupcheckin it will send a group message
     groupcheckincounter=0
 
     sendlogmessage('Claiming referrals: ' + claimreferrals)
@@ -337,6 +343,7 @@ if __name__ == '__main__':
     now = datetime.now(est)
     currentdate=today.strftime("%m-%d")
     currenttime=now.strftime("%H:%M")
+    #send group discord message if enabled
     if groupdiscord==1:
         sendgroupmessage('Program start time: ' + currentdate + ' ' + currenttime)
     else:
@@ -353,6 +360,16 @@ if __name__ == '__main__':
 
     #Begin in transaction watch cycle
     while True:
+
+        #Claim referrals on each cycle
+        if claimtime==1:
+            if int(claimreferrals) == 1:
+            #check and claim referral rewards
+                sendlogmessage('Opening referrals page and claiming fees')
+                gotoreferralrewards(driver,refreshtime)
+                claimreferralfees(driver,refreshtime)
+            #END IF   
+        #END IF         
 
         # Checks if errors have occured and program needs to be restarted
         if errorsthatoccured==errorsuntilrestart:
@@ -388,17 +405,22 @@ if __name__ == '__main__':
 
         #start transactions when wallet percentage reaches at least the % set in config OR the amount set to start
         if (float(walletbalancepercentage) >= float(walletpercentagetostart) or (float(currentwallet) >= float(walletamounttostart))):
+
+            #send group discord message if enabled
             if groupdiscord==1:
                 sendgroupmessage('Starting trades')
             else:
                 sendlogmessage('Starting trades')
 
-            if int(claimreferrals) == 1:
+            #Claim referrals before each trade cycle
+            if claimtime==0:
+                if int(claimreferrals) == 1:
                 #check and claim referral rewards
-                sendlogmessage('Opening referrals page and claiming fees')
-                gotoreferralrewards(driver,refreshtime)
-                claimreferralfees(driver,refreshtime)
-            #END IF
+                    sendlogmessage('Opening referrals page and claiming fees')
+                    gotoreferralrewards(driver,refreshtime)
+                    claimreferralfees(driver,refreshtime)
+                #END IF   
+            #END IF 
 
             #Goto Transaction Hall
             sendlogmessage('Back to transaction hall...')
@@ -466,6 +488,7 @@ if __name__ == '__main__':
 
         #checking if it is time to checkin
         if groupcheckincounter==groupcheckin:
+            #send group discord message if enabled
             if groupdiscord==1:
                 sendgroupmessage('Checking in')
             else:
