@@ -366,7 +366,7 @@ if __name__ == '__main__':
     while True:
 
         #Claim referrals on each cycle
-        if int(claimtime) == 0:
+        if int(claimtime) == 1:
             if int(claimreferrals) == 1:
             #check and claim referral rewards
                 sendlogmessage('Opening referrals page and claiming fees')
