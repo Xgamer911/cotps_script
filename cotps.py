@@ -319,6 +319,8 @@ if __name__ == '__main__':
 
     #Counter variable that will increment each cycle, once it reaches the groupcheckin it will send a group message
     groupcheckincounter=0
+    #This variable will skip the timebetweeneachcheck if a trade button errored out. This is to go right back into trading and not wait another 5 minutes.
+    sellbuttonmissingerror=0
 
     sendlogmessage('Claiming referrals: ' + claimreferrals)
     sendlogmessage('Keeping ' + reservepercentage + '% of funds for easy claiming')
@@ -362,7 +364,7 @@ if __name__ == '__main__':
     while True:
 
         #Claim referrals on each cycle
-        if claimtime==1:
+        if int(claimtime) == 0:
             if int(claimreferrals) == 1:
             #check and claim referral rewards
                 sendlogmessage('Opening referrals page and claiming fees')
@@ -403,8 +405,10 @@ if __name__ == '__main__':
         orderdicttxthisrun=0
         orderdictprofitthisrun=0
 
-        #start transactions when wallet percentage reaches at least the % set in config OR the amount set to start
-        if (float(walletbalancepercentage) >= float(walletpercentagetostart) or (float(currentwallet) >= float(walletamounttostart))):
+        #start transactions when wallet percentage reaches at least the % set in config OR the amount set to start or if previous cycle had a sellbutton error
+        if (float(walletbalancepercentage) >= float(walletpercentagetostart) or (float(currentwallet) >= float(walletamounttostart)) or (sellbuttonmissingerror==1)):
+            #setting error variable
+            sellbuttonmissingerror=0
 
             #send group discord message if enabled
             if groupdiscord==1:
@@ -413,7 +417,7 @@ if __name__ == '__main__':
                 sendlogmessage('Starting trades')
 
             #Claim referrals before each trade cycle
-            if claimtime==0:
+            if int(claimtime) == 0:
                 if int(claimreferrals) == 1:
                 #check and claim referral rewards
                     sendlogmessage('Opening referrals page and claiming fees')
@@ -476,7 +480,10 @@ if __name__ == '__main__':
                         break;
                     #END IF
                 else:
+                    #Will increment variable and if it reaches the errorsuntilrestart variable, the entire script will restart
                     errorsthatoccured=errorsthatoccured+1
+                    #
+                    sellbuttonmissingerror=1
                     #break out of loop when clicking sell buttons don't work
                     break
                 #END IF
@@ -495,8 +502,12 @@ if __name__ == '__main__':
                 sendlogmessage('Checking in')
             groupcheckincounter=0
 
-        #TODO - code in a skip if the sell button wasnt found.
-        time.sleep(timebetweeneachcheck)
-        groupcheckincounter=groupcheckincounter+1
+        # If sellbutton didnt error this should be 0, if error did occur this should be a 1 and skip the timebetweeneachcheck
+        if sellbuttonmissingerror != 1:
+            time.sleep(timebetweeneachcheck)
+            groupcheckincounter=groupcheckincounter+1
+        else:
+            sendlogmessage('Skipping cycle time due to sell button error')
+            time.sleep(refreshtime)
     #END WHILE
 #END DEF
