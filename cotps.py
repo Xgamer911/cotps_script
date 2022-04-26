@@ -472,6 +472,7 @@ if __name__ == '__main__':
                 sendlogmessage('Checking in')
             groupcheckincounter=0
 
+        #TODO - code in a skip if the sell button wasnt found.
         time.sleep(timebetweeneachcheck)
         groupcheckincounter=groupcheckincounter+1
     #END WHILE
