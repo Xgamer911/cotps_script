@@ -47,16 +47,18 @@ def startchrome(chromedriver):
     return driver
 #END DEF
 
-def dologincheck(driver,refreshtime):
-    #sendlogmessage('Logged in: ' + str(driver.execute_script("return localStorage['IS_LOGIN']")))
-    if driver.execute_script("return localStorage['IS_LOGIN']") != 'Y':
-        sendlogmessage('Not logged in')
-        setcountrycode(driver,refreshtime)
-        logintocotps(driver,refreshtime)
-        gototransactionhall(driver,refreshtime)
-    #else:
-        #sendlogmessage('Still logged in')
-    #END IF
+def dologincheck(driver,refreshtime,errorsthatoccured):
+    #Had issues with this section hard crashing, so adding try except
+    try:
+        if driver.execute_script("return localStorage['IS_LOGIN']") != 'Y':
+            sendlogmessage('Not logged in')
+            setcountrycode(driver,refreshtime)
+            logintocotps(driver,refreshtime)
+            gototransactionhall(driver,refreshtime)
+        #END IF
+    except:
+        restartprogram(driver, errorsthatoccured)
+    #END TRY
 #END DEF
 
 def logintocotps(driver,refreshtime):
@@ -378,7 +380,7 @@ if __name__ == '__main__':
             restartprogram(driver, errorsthatoccured)
             break
 
-        dologincheck(driver,refreshtime)
+        dologincheck(driver,refreshtime,errorsthatoccured)
 
         today=date.today()
         now = datetime.now(est)
@@ -490,7 +492,7 @@ if __name__ == '__main__':
             #END WHILE
             sendlogmessage('Total tx amount: $' + str(orderdicttxthisrun) + ', total profit: $' + str(orderdictprofitthisrun))
         #END IF
-        dologincheck(driver,refreshtime)
+        dologincheck(driver,refreshtime,errorsthatoccured)
         sendlogmessage('Waiting ' + str(timebetweeneachcheck) + ' seconds to begin next wallet check')
 
         #checking if it is time to checkin
