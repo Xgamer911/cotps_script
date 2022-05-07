@@ -71,6 +71,15 @@ def logintocotps(driver,refreshtime):
 
     driver.get('https://cotps.com/#/pages/login/login')
     time.sleep(refreshtime)
+    #Check if Login button is loaded yet
+    while True:
+        try:
+            if driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-button').is_displayed() == True:
+                break
+        except:
+            sendlogmessage("Error - Login Button not found")
+            time.sleep(refreshtime/2)
+
     ele = driver.find_elements_by_class_name('uni-input-input')
     sendlogmessage("Inputting phone number")
     ele[0].send_keys(username)
@@ -86,9 +95,19 @@ def logintocotps(driver,refreshtime):
 #END DEF
 
 def setcountrycode(driver,refreshtime):
-    sendlogmessage("Setting Country Code")
     driver.get('https://cotps.com/#/pages/phonecode/phonecode?from=login')
     time.sleep(refreshtime)
+
+    #Check if confirm button is loaded yet
+    while True:
+        try:
+            if driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[1]/uni-button').is_displayed() == True:
+                break
+        except:
+            sendlogmessage("Error - Confirm Button not found")
+            time.sleep(refreshtime/2)
+
+    sendlogmessage("Setting Country Code")
     ele = driver.find_elements_by_class_name('uni-input-input')
     #sendlogmessage("Inputting country code")
     ele[0].send_keys(countrycode)
@@ -169,11 +188,29 @@ def getwalletinfo(driver,walletinfo,refreshtime):
 
 def getandsellorder(driver,refreshtime):
     try:
+        #Check if Sell button 1 is loaded yet
+        while True:
+            try:
+                if driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[4]/uni-button').is_displayed() == True:
+                    break
+            except:
+                sendlogmessage("Error - Confirm Button not found")
+                time.sleep(refreshtime/2)
+
         varorder=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[4]/uni-button')
         varorder.click()
         time.sleep(refreshtime)
         sendlogmessage('Sell Order 1')
         try:
+            #Check if Sell button 2 is loaded yet
+            while True:
+                try:
+                    if driver.find_element_by_xpath('html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[7]/uni-view/uni-view/uni-view[6]/uni-button[2]').is_displayed() == True:
+                        break
+                except:
+                    sendlogmessage("Error - Confirm Button not found")
+                    time.sleep(refreshtime/2)
+
             varsell=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[7]/uni-view/uni-view/uni-view[6]/uni-button[2]')
             varsell.click()
             time.sleep(refreshtime)
