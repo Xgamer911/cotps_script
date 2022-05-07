@@ -57,6 +57,7 @@ def dologincheck(driver,refreshtime,errorsthatoccured):
             gototransactionhall(driver,refreshtime)
         #END IF
     except:
+        sendlogmessage("Error 3 - Login check failed")
         restartprogram(driver, errorsthatoccured)
     #END TRY
 #END DEF
@@ -71,19 +72,21 @@ def logintocotps(driver,refreshtime):
     driver.get('https://cotps.com/#/pages/login/login')
     time.sleep(refreshtime)
     ele = driver.find_elements_by_class_name('uni-input-input')
-    #sendlogmessage("Inputting phone number")
+    sendlogmessage("Inputting phone number")
     ele[0].send_keys(username)
     time.sleep(1)
-    #sendlogmessage("Inputting password")
+    sendlogmessage("Inputting password")
     ele[1].send_keys(password)
     time.sleep(1)
     #sendlogmessage("Finding and clicking login")
     loginbutton=driver.find_elements_by_class_name('login')
     loginbutton[0].click()
     time.sleep(refreshtime)
+    sendlogmessage("Logging in")
 #END DEF
 
 def setcountrycode(driver,refreshtime):
+    sendlogmessage("Setting Country Code")
     driver.get('https://cotps.com/#/pages/phonecode/phonecode?from=login')
     time.sleep(refreshtime)
     ele = driver.find_elements_by_class_name('uni-input-input')
@@ -94,6 +97,7 @@ def setcountrycode(driver,refreshtime):
     varcommit=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[1]/uni-button')
     varcommit.click()
     time.sleep(refreshtime)
+    sendlogmessage("Set Country Code")
 #END DEF
 
 def gototransactionhall(driver,refreshtime):
@@ -154,6 +158,8 @@ def getwalletinfo(driver,walletinfo,refreshtime):
         testvar=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[3]/uni-view[1]/uni-view[2]')
         currentintransaction=float(testvar.text)
         walletinfo[1]=currentintransaction
+
+        sendlogmessage('Getting Wallet: '+ str(currentwallet) + '| In transactions: '+ str(currentintransaction))
     except:
         sendlogmessage('Error getting wallet, refreshing page')
         gototransactionhall(driver,refreshtime)
@@ -166,10 +172,12 @@ def getandsellorder(driver,refreshtime):
         varorder=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[4]/uni-button')
         varorder.click()
         time.sleep(refreshtime)
+        sendlogmessage('Sell Order 1')
         try:
             varsell=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[7]/uni-view/uni-view/uni-view[6]/uni-button[2]')
             varsell.click()
             time.sleep(refreshtime)
+            sendlogmessage('Sell Order 2')
         except:
             sendlogmessage('Sell button 2 not found, breaking off')
             return False
@@ -190,6 +198,7 @@ def getorderdetails(driver,refreshtime,orderdict):
         orderdict.update({"profit": varprofit})
         orderdict.update({"total": vartotal})
         time.sleep(refreshtime)
+        sendlogmessage('Got Order Details')
     except:
         sendlogmessage('Error getting wallet, refreshing page')
         gototransactionhall(driver,refreshtime)
@@ -201,6 +210,7 @@ def orderconfirm():
     time.sleep(refreshtime)
     varconfirm=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[8]/uni-view/uni-view/uni-button')
     varconfirm.click()
+    sendlogmessage('Confirmed Order')
 #END DEF
 
 def clearorderdict():
@@ -211,6 +221,7 @@ def clearorderdict():
         "profit": "",
         "total": ""
     }
+    sendlogmessage("Cleared order dictionary")
     return orderdict
 #END DEF
 
@@ -221,12 +232,14 @@ def writecsvheader(csvfile):
 #END DEF
 
 def writedicttocsv(csvfile,orderdict):
+    sendlogmessage("Starting CSV tracking")
     if int(usecsvfile) == 1:
         try:
             with open(csvfile, 'a') as f:
                 sendlogmessage("Writing Order to CSV")
                 writer = csv.writer(f,lineterminator='\n')
                 writer.writerow([orderdict.get("ordernum"), orderdict.get("timeofsale"), orderdict.get("transactionamount"), orderdict.get("profit"), orderdict.get("total")])
+                sendlogmessage("Wrote Order to CSV")
                 return True
         except:
             return False
@@ -377,6 +390,7 @@ if __name__ == '__main__':
 
         # Checks if errors have occured and program needs to be restarted
         if errorsthatoccured==errorsuntilrestart:
+            sendlogmessage("Error 2 - Error Amount")
             restartprogram(driver, errorsthatoccured)
             break
 
@@ -440,6 +454,7 @@ if __name__ == '__main__':
                     orderdict=getorderdetails(driver,refreshtime,orderdict)
 
                     if str(orderdict.get("transactionamount")) == '':
+                        sendlogmessage('Error 1 - In transaction Blank')
                         break
                     #END IF
 
@@ -479,9 +494,11 @@ if __name__ == '__main__':
 
                     #If less than $5, stop purchasing
                     if currentwallet <= 5:
+                        sendlogmessage('Less than 5, Breaking out')
                         break;
                     #END IF
                 else:
+                    sendlogmessage("Error code increased")
                     #Will increment variable and if it reaches the errorsuntilrestart variable, the entire script will restart
                     errorsthatoccured=errorsthatoccured+1
                     #
@@ -493,8 +510,7 @@ if __name__ == '__main__':
             sendlogmessage('Total tx amount: $' + str(orderdicttxthisrun) + ', total profit: $' + str(orderdictprofitthisrun))
         #END IF
         dologincheck(driver,refreshtime,errorsthatoccured)
-        sendlogmessage('Waiting ' + str(timebetweeneachcheck) + ' seconds to begin next wallet check')
-
+        
         #checking if it is time to checkin
         if groupcheckincounter==groupcheckin:
             #send group discord message if enabled
@@ -506,6 +522,7 @@ if __name__ == '__main__':
 
         # If sellbutton didnt error this should be 0, if error did occur this should be a 1 and skip the timebetweeneachcheck
         if sellbuttonmissingerror != 1:
+            sendlogmessage('Waiting ' + str(timebetweeneachcheck) + ' seconds to begin next wallet check')
             time.sleep(timebetweeneachcheck)
             groupcheckincounter=groupcheckincounter+1
         else:
