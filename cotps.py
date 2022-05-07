@@ -286,12 +286,16 @@ def writedicttocsv(csvfile,orderdict):
 def sendlogmessage(message):
     try:
         #creating timestamp for discord message
-        today=date.today()
-        now = datetime.now(est)
-        currentdate=today.strftime("%m-%d")
-        currenttime=now.strftime("%H:%M")
+        usertoday=date.today()
+        usernow = datetime.now(est)
+        usercurrentdate=usertoday.strftime("%m-%d-%y")
+        usercurrenttime=usernow.strftime("%H:%M:%S")
+        zulutoday = date.today()
+        zulunow = datetime.now(utc)
+        zulucurrentdate = zulutoday.strftime("%m-%d-%y")
+        zulucurrenttime = zulunow.strftime("%H:%M:%S")
         #adding timestamp to discord message
-        sendingmessage = currentdate + ' ' + currenttime + ' - ' + message
+        sendingmessage = zulucurrentdate + ' ' + zulucurrenttime +'Z - ' + usercurrentdate + ' ' + usercurrenttime + ' - ' + message
         print(sendingmessage)
     except:
         print(message)
@@ -300,16 +304,20 @@ def sendlogmessage(message):
 def sendgroupmessage(message):
     try:
         #creating timestamp for discord message
-        today=date.today()
-        now = datetime.now(est)
-        currentdate=today.strftime("%m-%d")
-        currenttime=now.strftime("%H:%M")
+        usertoday=date.today()
+        usernow = datetime.now(est)
+        usercurrentdate=usertoday.strftime("%m-%d-%y")
+        usercurrenttime=usernow.strftime("%H:%M:%S")
+        zulutoday = date.today()
+        zulunow = datetime.now(utc)
+        zulucurrentdate = zulutoday.strftime("%m-%d-%y")
+        zulucurrenttime = zulunow.strftime("%H:%M:%S")
         #adding timestamp to discord message
         #send group discord message if enabled
         if groupdiscord == 1:
-            sendingmessage = groupbotname + ' - ' + currentdate + ' ' + currenttime + ' - ' + message
+            sendingmessage = groupbotname + ' - ' + zulucurrentdate + ' ' + zulucurrenttime +'Z - ' + usercurrentdate + ' ' + usercurrenttime + ' - ' + message
         else:
-            sendingmessage = currentdate + ' ' + currenttime + ' - ' + message
+            sendingmessage = usercurrentdate + ' ' + usercurrenttime + ' - ' + message
         webhook = Webhook.from_url(discordwebhookurl, adapter=RequestsWebhookAdapter())
         webhook.send(sendingmessage)
         print(sendingmessage)
@@ -342,6 +350,7 @@ if __name__ == '__main__':
     timebetweeneachcheck=int(config['DEFAULT']['timebetweenchecks'])
     #Setting Timezone
     est=pytz.timezone(config['DEFAULT']['timezone'])
+    utc=pytz.timezone('UTC')
     #Use CSV file? True/False
     usecsvfile=config['DEFAULT']['usecsvfile']
     #setting CSV file location
@@ -393,15 +402,19 @@ if __name__ == '__main__':
     #END IF
 
     #Gets current time and sets timezone
-    today=date.today()
-    now = datetime.now(est)
-    currentdate=today.strftime("%m-%d")
-    currenttime=now.strftime("%H:%M")
+    usertoday=date.today()
+    usernow = datetime.now(est)
+    usercurrentdate=usertoday.strftime("%m-%d-%y")
+    usercurrenttime=usernow.strftime("%H:%M:%S")
+    zulutoday = date.today()
+    zulunow = datetime.now(utc)
+    zulucurrentdate = zulutoday.strftime("%m-%d-%y")
+    zulucurrenttime = zulunow.strftime("%H:%M:%S")
     #send group discord message if enabled
     if groupdiscord==1:
-        sendgroupmessage('Program start time: ' + currentdate + ' ' + currenttime)
+        sendgroupmessage('Program start time: ' + usercurrentdate + ' ' + usercurrenttime)
     else:
-        sendlogmessage('Program start time: ' + currentdate + ' ' + currenttime)
+        sendlogmessage('Program start time: ' + usercurrentdate + ' ' + usercurrenttime)
 
     #start browser
     driver=startchrome(chromedriver)
@@ -433,10 +446,10 @@ if __name__ == '__main__':
 
         dologincheck(driver,refreshtime,errorsthatoccured)
 
-        today=date.today()
-        now = datetime.now(est)
-        currentdate=today.strftime("%m-%d")
-        currenttime=now.strftime("%H:%M")
+        usertoday=date.today()
+        usernow = datetime.now(est)
+        usercurrentdate=usertoday.strftime("%m-%d-%y")
+        usercurrenttime=usernow.strftime("%H:%M:%S")
 
         #Goto Transaction Hall
         sendlogmessage('Back to transaction hall...')
@@ -497,11 +510,11 @@ if __name__ == '__main__':
 
                     #Click Confirm button
                     orderconfirm()
-                    today=date.today()
-                    now = datetime.now(est)
-                    currentdate=today.strftime("%m-%d")
-                    currenttime=now.strftime("%H:%M")
-                    timestamp=currentdate + ' ' + currenttime
+                    usertoday=date.today()
+                    usernow = datetime.now(est)
+                    usercurrentdate=usertoday.strftime("%m-%d-%y")
+                    usercurrenttime=usernow.strftime("%H:%M:%S")
+                    timestamp=usercurrentdate + ' ' + usercurrenttime
                     sendlogmessage('Order $' + str(orderdict.get("transactionamount")) + ', profit $' + str(orderdict.get("profit")) + ' at ' + str(timestamp))
                     orderdict.update({"timeofsale": str(timestamp)})
                     if orderdict.get("transactionamount") != '':
