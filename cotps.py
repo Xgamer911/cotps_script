@@ -1,5 +1,5 @@
 # cotps_script
-# v1.3
+# v1.3.1
 # Script by Ryan Briggs, with LOTS of mods and code cleanup by Francis.
 #Import modules
 #Controlling chrome modules
