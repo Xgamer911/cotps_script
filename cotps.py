@@ -1,5 +1,5 @@
 # cotps_script
-# v1.3.1
+# v1.3.4
 # Script by Ryan Briggs, with LOTS of mods and code cleanup by Francis.
 #Import modules
 #Controlling chrome modules
@@ -71,6 +71,7 @@ def logintocotps(driver,refreshtime):
 
     driver.get('https://cotps.com/#/pages/login/login')
     time.sleep(refreshtime)
+
     #Check if Login button is loaded yet
     while True:
         try:
@@ -95,6 +96,7 @@ def logintocotps(driver,refreshtime):
 #END DEF
 
 def setcountrycode(driver,refreshtime):
+    localerrorcount=0
     driver.get('https://cotps.com/#/pages/phonecode/phonecode?from=login')
     time.sleep(refreshtime)
 
@@ -106,6 +108,11 @@ def setcountrycode(driver,refreshtime):
         except:
             sendlogmessage("Error - Confirm Button not found")
             time.sleep(refreshtime/2)
+            #if enough time passes it will attempt to reload the page
+            if localerrorcount == 3:
+                setcountrycode(driver,refreshtime)
+            else:
+                localerrorcount = localerrorcount + 1
 
     sendlogmessage("Setting Country Code")
     ele = driver.find_elements_by_class_name('uni-input-input')
@@ -120,46 +127,122 @@ def setcountrycode(driver,refreshtime):
 #END DEF
 
 def gototransactionhall(driver,refreshtime):
+    localerrorcount = 0
+    sendlogmessage('Back to transaction hall...')
     driver.get('https://cotps.com/#/pages/transaction/transaction')
     time.sleep(refreshtime)
+    while True:
+        try:
+            #Check if transaction hall order button is displayed
+            if driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[4]/uni-button').is_displayed() == True:
+                break
+        except:
+            sendlogmessage("Error - Transaction hall order button not found")
+            time.sleep(refreshtime)
+            #if enough time passes it will attempt to reload the page
+            if localerrorcount == 3:
+                gototransactionhall(driver,refreshtime)
+            else:
+                localerrorcount = localerrorcount + 1
 #END DEF
 
 def gotoreferralrewards(driver,refreshtime):
+    localerrorcount = 0
     driver.get('https://cotps.com/#/pages/userCenter/myTeam')
     time.sleep(refreshtime)
+    while True:
+        try:
+            #Check if level 1 button is displayed
+            if driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[1]/uni-view[1]').is_displayed() == True:
+                break
+        except:
+            sendlogmessage("Error - Transaction hall order button not found")
+            time.sleep(refreshtime)
+            #if enough time passes it will attempt to reload the page
+            if localerrorcount == 3:
+                gotoreferralrewards(driver,refreshtime)
+            else:
+                localerrorcount = localerrorcount + 1
 #END DEF
 
 def claimreferralfees(driver,refreshtime):
     try:
-        # Claim LV1
+    # Claim LV1
+        #Check if level 1 button is displayed
+        localerrorcount = 0
+        while True:
+            try:
+                if driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[1]/uni-view[1]').is_displayed() == True:
+                    break
+            except:
+                sendlogmessage("Error - Level 1 tab not found")
+                time.sleep(refreshtime)
+                #if enough time passes it will attempt to reload the page
+                if localerrorcount == 3:
+                    gotoreferralrewards(driver,refreshtime)
+                else:
+                    localerrorcount = localerrorcount + 1
+        #Click receive button
         varfees1=float(driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-view/uni-view[1]/uni-view[2]/uni-view[2]').text)
         varconfirm=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-view/uni-button')
         varconfirm.click()
         sendlogmessage('Fees LV1: $' + str(varfees1))
         time.sleep(refreshtime)
 
-        # Claim LV2
+    # Claim LV2
+        #Switch to lvl 2 tab
         varfees2=float(driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-view/uni-view[1]/uni-view[2]/uni-view[2]').text)
         varconfirm=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[1]/uni-view[2]')
         varconfirm.click()
-        time.sleep(refreshtime/2)
+        time.sleep(refreshtime)
+        #Check if level 2 button is displayed
+        localerrorcount = 0
+        while True:
+            try:
+                if driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[1]/uni-view[1]').is_displayed() == True:
+                    break
+            except:
+                sendlogmessage("Error - Level 2 tab not found")
+                time.sleep(refreshtime)
+                #if enough time passes it will attempt to reload the page
+                if localerrorcount == 3:
+                    gotoreferralrewards(driver,refreshtime)
+                else:
+                    localerrorcount = localerrorcount + 1
+        #Click receive button
         varconfirm=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-view/uni-button')
         varconfirm.click()
         sendlogmessage('Fees LV2: $' + str(varfees2))
         time.sleep(refreshtime)
 
-        # Claim LV3
+    # Claim LV3
+        #Switch to lvl 3 tab
         varfees3=float(driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-view/uni-view[1]/uni-view[2]/uni-view[2]').text)
         varconfirm=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[1]/uni-view[3]')
         varconfirm.click()
-        time.sleep(refreshtime/2)
+        time.sleep(refreshtime)
+        #Check if level 3 button is displayed
+        localerrorcount = 0
+        while True:
+            try:
+                if driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[1]/uni-view[3]').is_displayed() == True:
+                    break
+            except:
+                sendlogmessage("Error - Level 3 tab not found")
+                time.sleep(refreshtime)
+                #if enough time passes it will attempt to reload the page
+                if localerrorcount == 3:
+                    gotoreferralrewards(driver,refreshtime)
+                else:
+                    localerrorcount = localerrorcount + 1
+        #Click receive button
         varconfirm=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[2]/uni-view/uni-button')
         sendlogmessage('Fees LV3: $' + str(varfees3))
         varconfirm.click()
         varfeetotal=varfees1+varfees2+varfees3
 
+    # Total Claimed
         sendlogmessage('Claimed fees: $' + str(varfeetotal))
-
         time.sleep(refreshtime)
     except:
         sendlogmessage('Error claiming referrals, back to the hall..')
@@ -195,7 +278,7 @@ def getandsellorder(driver,refreshtime):
                     break
             except:
                 sendlogmessage("Error - Confirm Button not found")
-                time.sleep(refreshtime/2)
+                time.sleep(refreshtime)
 
         varorder=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[4]/uni-button')
         varorder.click()
@@ -209,7 +292,7 @@ def getandsellorder(driver,refreshtime):
                         break
                 except:
                     sendlogmessage("Error - Confirm Button not found")
-                    time.sleep(refreshtime/2)
+                    time.sleep(refreshtime)
 
             varsell=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[7]/uni-view/uni-view/uni-view[6]/uni-button[2]')
             varsell.click()
@@ -244,7 +327,22 @@ def getorderdetails(driver,refreshtime,orderdict):
 #END DEF
 
 def orderconfirm():
+    localerrorcount=0
     time.sleep(refreshtime)
+    #Check if confrim button is loaded yet
+    while True:
+        try:
+            if driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[8]/uni-view/uni-view/uni-button').is_displayed() == True:
+                break
+        except:
+            sendlogmessage("Error - Confirm Button not found")
+            time.sleep(refreshtime)
+            #if enough time passes it will attempt to reload the page
+            if localerrorcount == 3:
+                gototransactionhall(driver,refreshtime)
+            else:
+                localerrorcount = localerrorcount + 1
+    #Click the confirm button
     varconfirm=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[8]/uni-view/uni-view/uni-button')
     varconfirm.click()
     sendlogmessage('Confirmed Order')
@@ -452,7 +550,6 @@ if __name__ == '__main__':
         usercurrenttime=usernow.strftime("%H:%M:%S")
 
         #Goto Transaction Hall
-        sendlogmessage('Back to transaction hall...')
         gototransactionhall(driver,refreshtime)
 
         #get wallet info and see if anything is in tranaction
@@ -493,7 +590,6 @@ if __name__ == '__main__':
             #END IF 
 
             #Goto Transaction Hall
-            sendlogmessage('Back to transaction hall...')
             gototransactionhall(driver,refreshtime)
 
             while True:
