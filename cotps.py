@@ -474,7 +474,7 @@ if __name__ == '__main__':
     #This variable will skip the timebetweeneachcheck if a trade button errored out. This is to go right back into trading and not wait another 5 minutes.
     sellbuttonmissingerror=0
     #Version info
-    botversion='1.3.8'
+    botversion='1.3.9'
 
     sendlogmessage(botversion)
     sendlogmessage('Claiming referrals: ' + claimreferrals)
