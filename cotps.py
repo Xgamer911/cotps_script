@@ -474,7 +474,7 @@ if __name__ == '__main__':
     #This variable will skip the timebetweeneachcheck if a trade button errored out. This is to go right back into trading and not wait another 5 minutes.
     sellbuttonmissingerror=0
     #Version info
-    botversion='1.3.9'
+    botversion='1.3.9.2'
 
     sendlogmessage(botversion)
     sendlogmessage('Claiming referrals: ' + claimreferrals)
@@ -551,17 +551,30 @@ if __name__ == '__main__':
             #Goto Transaction Hall
             gototransactionhall(driver,refreshtime)
 
-            #get wallet info and see if anything is in tranaction
-            walletinfo=getwalletinfo(driver,walletinfo,refreshtime)
+            try:
+                #get wallet info and see if anything is in tranaction
+                walletinfo=getwalletinfo(driver,walletinfo,refreshtime)
 
-            #Get in transaction amount
-            currentwallet=float(walletinfo[0])
-            intranswallet=float(walletinfo[1])
-            sendlogmessage('In transactions: $' + str(intranswallet))
-            sendlogmessage('Wallet balance: $' + str(currentwallet) + ' (needed for trading: $' + str(walletamounttostart) + ') OR')
-            totalassets=intranswallet+currentwallet
-            walletbalancepercentage=round(100/(totalassets/currentwallet), 2)
-            sendlogmessage('Wallet balance percentage: ' + str(walletbalancepercentage) + '% (needed for trading: ' + str(walletpercentagetostart) + '%)')
+                #Get in transaction amount
+                currentwallet=float(walletinfo[0])
+                intranswallet=float(walletinfo[1])
+                sendlogmessage('In transactions: $' + str(intranswallet))
+                sendlogmessage('Wallet balance: $' + str(currentwallet) + ' (needed for trading: $' + str(walletamounttostart) + ') OR')
+                totalassets=intranswallet+currentwallet
+                #ERROR - divide by zero?
+                walletbalancepercentage=round(100/(totalassets/currentwallet), 2)
+                sendlogmessage('Wallet balance percentage: ' + str(walletbalancepercentage) + '% (needed for trading: ' + str(walletpercentagetostart) + '%)')
+            except:
+                sendlogmessage('Error - Couldn\'t find wallet or intransaction amount')
+                sendlogmessage('Error info: walletinfo: ' + str(walletinfo))
+                sendlogmessage('Error info: walletinfotype: ' + str(type(walletinfo)))
+                sendlogmessage('Error info: totalassets: ' + str(totalassets))
+                sendlogmessage('Error info: totalassetstype: ' + str(type(totalassets)))
+                sendlogmessage('Error info: currentwallet: ' + str(currentwallet))
+                sendlogmessage('Error info: currentwallettype: ' + str(type(currentwallet)))
+                time.sleep(refreshtime)
+                gototransactionhall(driver,refreshtime)
+
 
             #Did all my money come back yet
             orderdicttxthisrun=0
@@ -614,24 +627,37 @@ if __name__ == '__main__':
                     orderdict=getorderdetails(driver,refreshtime,orderdict)
 
                     if str(orderdict.get("transactionamount")) == '':
-                        vartmp=0
+                        #Transaction stuck, breaking out and restarting trading cycle
+                        vartmp=str(0.00)
                         orderdict.update({"transactionamount": vartmp})
                         sendlogmessage('Error 1 - In transaction Blank')
+                        sendlogmessage('Error info: oredict: ' + str(orderdict))
+                        sendlogmessage('Error info: oredicttype: ' + str(type(orderdict)))
+                        sellbuttonmissingerror=1
+                        break
                     #END IF
 
                     #Click Confirm button
                     orderconfirm()
-                    usertoday=date.today()
-                    usernow = datetime.now(est)
-                    usercurrentdate=usertoday.strftime("%m-%d-%y")
-                    usercurrenttime=usernow.strftime("%H:%M:%S")
-                    timestamp=usercurrentdate + ' ' + usercurrenttime
-                    sendlogmessage('Order $' + str(orderdict.get("transactionamount")) + ', profit $' + str(orderdict.get("profit")) + ' at ' + str(timestamp))
-                    orderdict.update({"timeofsale": str(timestamp)})
-                    if orderdict.get("transactionamount") != '':
-                        orderdicttxthisrun = float(orderdicttxthisrun) + float(orderdict.get("transactionamount"))
-                    #END IF
-                    orderdictprofitthisrun = round(float(orderdictprofitthisrun) + float(orderdict.get("profit")), 2)
+
+                    try:
+                        usertoday=date.today()
+                        usernow = datetime.now(est)
+                        usercurrentdate=usertoday.strftime("%m-%d-%y")
+                        usercurrenttime=usernow.strftime("%H:%M:%S")
+                        timestamp=usercurrentdate + ' ' + usercurrenttime
+                        sendlogmessage('Order $' + str(orderdict.get("transactionamount")) + ', profit $' + str(orderdict.get("profit")) + ' at ' + str(timestamp))
+                        orderdict.update({"timeofsale": str(timestamp)})
+                        if orderdict.get("transactionamount") != '':
+                            orderdicttxthisrun = float(orderdicttxthisrun) + float(orderdict.get("transactionamount"))
+                        #END IF
+                        orderdictprofitthisrun = round(float(orderdictprofitthisrun) + float(orderdict.get("profit")), 2)
+                    except:
+                        sendlogmessage('Error  - Order details or Floats incorrect')
+                        sendlogmessage('Error info: oredict: ' + str(orderdict))
+                        sendlogmessage('Error info: oredicttype: ' + str(type(orderdict)))
+                        sendlogmessage('Error info: orderdicttxthisrun: ' + str(orderdicttxthisrun))
+                        sendlogmessage('Error info: orderdicttxthisruntype: ' + str(type(orderdicttxthisrun)))
 
                     #Write current Order to CSV
                     writedicttocsv(csvfile,orderdict)
