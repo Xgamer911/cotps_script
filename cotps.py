@@ -1,10 +1,11 @@
 # cotps_script
-# v1.3.4
+# v1.3.5
 # Script by Ryan Briggs, with LOTS of mods and code cleanup by Francis.
 #Import modules
 #Controlling chrome modules
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import WebDriverException
 #Configuration
 import configparser
 #For Sleep functions
@@ -128,11 +129,11 @@ def setcountrycode(driver,refreshtime):
 
 def gototransactionhall(driver,refreshtime):
     localerrorcount = 0
-    sendlogmessage('Back to transaction hall...')
-    driver.get('https://cotps.com/#/pages/transaction/transaction')
-    time.sleep(refreshtime)
     while True:
         try:
+            sendlogmessage('Back to transaction hall...')
+            driver.get('https://cotps.com/#/pages/transaction/transaction')
+            time.sleep(refreshtime)
             #Check if transaction hall order button is displayed
             if driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[4]/uni-button').is_displayed() == True:
                 break
@@ -278,22 +279,14 @@ def getandsellorder(driver,refreshtime):
                     break
             except:
                 sendlogmessage("Error - Confirm Button not found")
-                time.sleep(refreshtime)
+                time.sleep(refreshtime*2)
+                gototransactionhall(driver,refreshtime)
 
         varorder=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[4]/uni-button')
         varorder.click()
-        time.sleep(refreshtime)
+        time.sleep(refreshtime*2)
         sendlogmessage('Sell Order 1')
         try:
-            #Check if Sell button 2 is loaded yet
-            while True:
-                try:
-                    if driver.find_element_by_xpath('html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[7]/uni-view/uni-view/uni-view[6]/uni-button[2]').is_displayed() == True:
-                        break
-                except:
-                    sendlogmessage("Error - Confirm Button not found")
-                    time.sleep(refreshtime)
-
             varsell=driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[7]/uni-view/uni-view/uni-view[6]/uni-button[2]')
             varsell.click()
             time.sleep(refreshtime)
@@ -480,7 +473,10 @@ if __name__ == '__main__':
     groupcheckincounter=0
     #This variable will skip the timebetweeneachcheck if a trade button errored out. This is to go right back into trading and not wait another 5 minutes.
     sellbuttonmissingerror=0
+    #Version info
+    botversion='1.3.8'
 
+    sendlogmessage(botversion)
     sendlogmessage('Claiming referrals: ' + claimreferrals)
     sendlogmessage('Keeping ' + reservepercentage + '% of funds for easy claiming')
 
@@ -525,49 +521,63 @@ if __name__ == '__main__':
 
     #Begin in transaction watch cycle
     while True:
+        try:
+            #declare variable to prevent not defined error
+            walletbalancepercentage = 0
 
-        #Claim referrals on each cycle
-        if int(claimtime) == 1:
-            if int(claimreferrals) == 1:
-            #check and claim referral rewards
-                sendlogmessage('Opening referrals page and claiming fees')
-                gotoreferralrewards(driver,refreshtime)
-                claimreferralfees(driver,refreshtime)
-            #END IF   
-        #END IF         
+            #Claim referrals on each cycle
+            if int(claimtime) == 1:
+                if int(claimreferrals) == 1:
+                #check and claim referral rewards
+                    sendlogmessage('Opening referrals page and claiming fees')
+                    gotoreferralrewards(driver,refreshtime)
+                    claimreferralfees(driver,refreshtime)
+                #END IF   
+            #END IF         
 
-        # Checks if errors have occured and program needs to be restarted
-        if errorsthatoccured==errorsuntilrestart:
-            sendlogmessage("Error 2 - Error Amount")
-            restartprogram(driver, errorsthatoccured)
-            break
+            # Checks if errors have occured and program needs to be restarted
+            if errorsthatoccured==errorsuntilrestart:
+                sendlogmessage("Error 2 - Error Amount")
+                restartprogram(driver, errorsthatoccured)
+                break
 
-        dologincheck(driver,refreshtime,errorsthatoccured)
+            dologincheck(driver,refreshtime,errorsthatoccured)
 
-        usertoday=date.today()
-        usernow = datetime.now(est)
-        usercurrentdate=usertoday.strftime("%m-%d-%y")
-        usercurrenttime=usernow.strftime("%H:%M:%S")
+            usertoday=date.today()
+            usernow = datetime.now(est)
+            usercurrentdate=usertoday.strftime("%m-%d-%y")
+            usercurrenttime=usernow.strftime("%H:%M:%S")
 
-        #Goto Transaction Hall
-        gototransactionhall(driver,refreshtime)
+            #Goto Transaction Hall
+            gototransactionhall(driver,refreshtime)
 
-        #get wallet info and see if anything is in tranaction
-        walletinfo=getwalletinfo(driver,walletinfo,refreshtime)
+            #get wallet info and see if anything is in tranaction
+            walletinfo=getwalletinfo(driver,walletinfo,refreshtime)
 
-        #Get in transaction amount
-        currentwallet=float(walletinfo[0])
-        intranswallet=float(walletinfo[1])
-        sendlogmessage('In transactions: $' + str(intranswallet))
-        sendlogmessage('Wallet balance: $' + str(currentwallet) + ' (needed for trading: $' + str(walletamounttostart) + ') OR')
-        totalassets=intranswallet+currentwallet
-        walletbalancepercentage=round(100/(totalassets/currentwallet), 2)
-        sendlogmessage('Wallet balance percentage: ' + str(walletbalancepercentage) + '% (needed for trading: ' + str(walletpercentagetostart) + '%)')
+            #Get in transaction amount
+            currentwallet=float(walletinfo[0])
+            intranswallet=float(walletinfo[1])
+            sendlogmessage('In transactions: $' + str(intranswallet))
+            sendlogmessage('Wallet balance: $' + str(currentwallet) + ' (needed for trading: $' + str(walletamounttostart) + ') OR')
+            totalassets=intranswallet+currentwallet
+            walletbalancepercentage=round(100/(totalassets/currentwallet), 2)
+            sendlogmessage('Wallet balance percentage: ' + str(walletbalancepercentage) + '% (needed for trading: ' + str(walletpercentagetostart) + '%)')
 
-        #Did all my money come back yet
-        orderdicttxthisrun=0
-        orderdictprofitthisrun=0
-
+            #Did all my money come back yet
+            orderdicttxthisrun=0
+            orderdictprofitthisrun=0
+        except WebDriverException:
+            while True:
+                try:
+                    time.sleep(refreshtime*2)
+                    gototransactionhall(driver,refreshtime)
+                    #Check if transaction hall order button is displayed
+                    if driver.find_element_by_xpath('/html/body/uni-app/uni-page/uni-page-wrapper/uni-page-body/uni-view/uni-view[4]/uni-button').is_displayed() == True:
+                        break
+                except:
+                    sendlogmessage("Error - Transaction hall not found")
+                    time.sleep(refreshtime*2)
+                    
         #start transactions when wallet percentage reaches at least the % set in config OR the amount set to start or if previous cycle had a sellbutton error
         if (float(walletbalancepercentage) >= float(walletpercentagetostart) or (float(currentwallet) >= float(walletamounttostart)) or (sellbuttonmissingerror==1)):
             #setting error variable
@@ -590,7 +600,11 @@ if __name__ == '__main__':
             #END IF 
 
             #Goto Transaction Hall
-            gototransactionhall(driver,refreshtime)
+            try:
+                gototransactionhall(driver,refreshtime)
+            except:
+                time.sleep(refreshtime)
+                gototransactionhall(driver,refreshtime)
 
             while True:
 
@@ -600,8 +614,9 @@ if __name__ == '__main__':
                     orderdict=getorderdetails(driver,refreshtime,orderdict)
 
                     if str(orderdict.get("transactionamount")) == '':
+                        vartmp=0
+                        orderdict.update({"transactionamount": vartmp})
                         sendlogmessage('Error 1 - In transaction Blank')
-                        break
                     #END IF
 
                     #Click Confirm button
